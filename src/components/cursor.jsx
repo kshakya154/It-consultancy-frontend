@@ -1,20 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React,{ useEffect, useRef } from "react";
 
 export default function Cursor() {
-  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const cursorRef = useRef(null);
 
   useEffect(() => {
-    const move = (e) => setPos({ x: e.clientX, y: e.clientY });
+    const cursor = cursorRef.current;
+
+    const move = (e) => {
+      requestAnimationFrame(() => {
+        cursor.style.transform = `translate3d(${e.clientX - 8}px, ${
+          e.clientY - 8
+        }px, 0)`;
+      });
+    };
+
     window.addEventListener("mousemove", move);
-    return () => window.removeEventListener("mousemove", move);
+
+    return () => {
+      window.removeEventListener("mousemove", move);
+    };
   }, []);
 
   return (
     <div
-      className="fixed top-0 left-0 w-16 h-16 bg-black rounded-full pointer-events-none mix-blend-difference z-[9999] transition-transform duration-150"
-      style={{
-        transform: `translate(${pos.x - 32}px, ${pos.y - 32}px)`,
-      }}
+      ref={cursorRef}
+      className="fixed top-0 left-0 w-4 h-4 bg-blue-600 rounded-full pointer-events-none z-[9999] shadow-[0_0_20px_rgba(37,99,235,0.7)]"
     />
   );
 }
